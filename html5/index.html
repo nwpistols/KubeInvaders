@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <title>KubeInvaders</title>
-    <!-- Bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./bootstrap-5.0.0-dist/css/bootstrap.min.css">
     <style>
-      canvas { background: #000; display: block; margin: 0 auto; border:1px solid #ffffff;}
+      canvas { background: #141313; display: block; margin: 0 auto; border:1px solid #c2c0c1;}
+      body { background-color: #000000;}
     </style>
   </head>
   <body>
@@ -21,16 +21,17 @@
           <ul class="navbar-nav">
             <li class="nav-item dropdown" style="margin-top: 0.2%;">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <font style="color: #0cf52b;">Menu</font>
+                <font style="color: #ffffff;">Menu</font>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                <li><a class="dropdown-item" href="#" onclick="runKubeLinter()">Run KubeLinter On Curent Namespace</a></li>
+                <li><a class="dropdown-item" href="#" onclick="runKubeLinter()">Run KubeLinter (Current Namespace)</a></li>
+                <li><a class="dropdown-item" href="#" onclick="runTrivy()">Run Trivy (Current Namespace)</a></li>
                 <li><a class="dropdown-item" href="#" onclick="showSpecialKeys()">Show Special Keys</a></li>
                 <li><a class="dropdown-item" href="#" onclick="showCurrentChaosContainer()">Show Current Chaos Container for nodes</a></li>
                 <li><a class="dropdown-item" href="#" onclick="showSetCurrentChaosContainer()">Set Custom Chaos Container for nodes</a></li>
             </li>
           </ul>
-          <li class="nav-item" style="margin-top: 1%;">
+          <li class="nav-item chaosengineering" style="margin-top: 1%;">
             <span class=".navbar-text" style="color: #bbbbbb;">Deleted Pod Total:&nbsp;&nbsp;<span id="deleted_pods_total" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
             <span class=".navbar-text" style="color: #bbbbbb">Chaos Jobs Total:&nbsp;&nbsp;<span id="chaos_jobs_total" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
             <span class=".navbar-text" style="color: #bbbbbb">Not Running Pods:&nbsp;&nbsp;<span id="pods_not_running_on" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
@@ -40,7 +41,32 @@
         </div>
       </div>
     </nav>
+    
     <!-- Modal -->
+    <div class="modal" id="regexFilterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <label for="currentRegexFilter" style="margin-bottom: 1%;" onte>Current Regex Filter for Umarell Console</label>
+            <pre id="currentRegexFilter">.*</pre> 
+            <form>
+              <div class="form-group">
+                <label for="exampleFormControlTextarea1" style="margin-bottom: 1%;" onte>Define new Regex Filter</label>
+                <textarea class="form-control" id="currentRegexFilterTextArea" rows="10"></textarea>
+              </div>
+              <div class="form-group">
+                <p id="alert_placeholder2" style="color: black; font-family: 'Courier New', Courier, monospace; margin-top: 3%;"></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="setRegexFilter()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeRegexFilterModal()">Close</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="currentChaosContainerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -49,6 +75,19 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeCurrentChaosJobModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="trivyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <pre id="trivyResult">Trivy Analysis has been started. Check Umarell Console.</pre> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeTrivyModal()">Close</button>
           </div>
         </div>
       </div>
@@ -112,19 +151,19 @@
       </div>
     </div>
 
-    <div class="container" id="gameContainer" style="width: 50%; height: 50%;">
+    <div class="container chaosengineering" id="gameContainer" style="width: 50%; height: 50%;">
       <div class="starter-template">
-        <div class="container" style="margin-bottom: 2%;">
+        <div class="container chaosengineering" style="margin-bottom: 2%;">
           <div class="row" style="margin-top: 2%;">
             <div class="row">
               <div class="col text-center">
-                <button type="button" id="controlAutoPilotButton" class="btn btn-danger" onclick="controlAutoPilot()">Start</button>
+                <button type="button" id="controlAutoPilotButton" class="btn btn-dark" onclick="controlAutoPilot()">Start</button>
               </div>
               <div class="col text-center">
                 <input type="range" id="randomFactorInput" name="randomFactorInput" min="0" max="100" value="50" onclick="changeRandomFactor()">
               </div>
-              <div class="col text-center">
-                <label for="randomFactorInput">Ramdom Factor:&nbsp;<span id="currentRandomFactor">50</span></label>
+              <div class="col text-center text-white">
+                <label for="randomFactorInput">Random Factor:&nbsp;<span id="currentRandomFactor">50</span></label>
               </div>
             </div>
             <div class="row" style="margin-top: 1%;">
@@ -140,31 +179,65 @@
             </div>
           </div>
         </div>
+        
         <div class="row">
-          <canvas id="myCanvas" width="720" height="480"></canvas>
+          <canvas class="chaosengineering" id="myCanvas" width="720" height="480"></canvas>
         </div>
-        <div class="row">
-          <div class="col text-center">
 
+        <div class="row chaosengineering">
+          <div class="col text-center">
           </div>
           <div class="col text-center">
             <input type="button" style="margin-top: 2%" class="btn btn-dark" id="zoomInGameScreenInput" name="zoomInGameScreenInput" value="+" onclick="zoomIn()">
             <input type="button" style="margin-top: 2%" class="btn btn-dark" id="zoomOutGameScreenInput" name="zoomOutGameScreenInput" value="-" onclick="zoomOut()">
           </div>
           <div class="col text-center">
+          </div>
+        </div>
 
+
+        <div class="row" style="margin-top: 2%;">
+          <div class="col">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="umarellEventsSwitch" onclick="umarellSwitchEvents()">
+              <label class="form-check-label" for="umarellEventsSwitch" style="color: #dfdddd;">Events</label>
+             </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="umarellPodlogsSwitch" onclick="umarellSwitchPodLogs()">
+              <label class="form-check-label" for="umarellPodlogsSwitch" style="color: #dfdddd;">Pod Logs</label>
+            </div>
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-dark btn-lg" onclick="openRegexFilterModal()">Regex Filter</button>
+          </div>
+          <div class="col">
+          </div>
+          <div class="col">
+          </div>  
+        </div>
+        <div class="row alerts">
+          <div id="alert_placeholder" style="margin-top: 1%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container chaosengineering" id="eventcontainer" style="width: 100%; height: 100%;">
+      <div class="row logging" id="eventcard">
+        <div class="card events border border-danger" style="width: 100%; background-color: #141313; overflow-y: scroll; overscroll-behavior-y: revert; height: 500px;">
+          <div class="card-body">
+            <h5 class="card-title"><font color="#808080">Umarell Console</font></h5>
+              <code class="card-text" id="events" style="color: #ee4035;">...</code>
           </div>
         </div>
       </div>
-      <div id="alert_placeholder" style="margin-top: 3%;"></div>
     </div>
+
     <div id="footer" style="margin-top: 5%;">
       <div class="container text-center">
-        <p class="text-muted credit" style="color:#fff">kubeinvaders_version: v1.9</p>
+        <p class="text-muted credit" style="color:#fff">kubeinvaders_version: develop</p>
       </div>
     </div>
     
-
     <script src="kubeinvaders.js"></script>
     <script src="./bootstrap-5.0.0-dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -175,6 +248,8 @@
       function changeRandomFactor() {
         randomFactor = $("#randomFactorInput").val();
         $("#currentRandomFactor").text(randomFactor);
+        $("#currentRandomFactor").style.color = "green";
+
       }
 
       function zoomIn() {
@@ -233,6 +308,21 @@
 
       function closeKubeLinterModal() {
         $('#kubeLinterModal').modal('hide');
+        modal_opened = false;
+      }
+
+      function closeTrivyModal() {
+        $('#trivyModal').modal('hide');
+        modal_opened = false;
+      }
+
+      function openRegexFilterModal() {
+        $('#regexFilterModal').modal('show');
+        modal_opened = true;
+      }
+
+      function closeRegexFilterModal() {
+        $('#regexFilterModal').modal('hide');
         modal_opened = false;
       }
 

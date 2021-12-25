@@ -19,6 +19,10 @@ var autoPilot = false;
 var autoPilotDirection = 0;
 var spaceshipxOld = 0;
 var randomFactor = 10;
+
+// Umarell Console Variables
+var umarell_items = [];
+
 // pods list from kubernetes
 var pods = [];
 
@@ -77,12 +81,52 @@ var help = false;
 var chaos_nodes = true;
 var chaos_pods = true;
 
-var alert_div = '<div id="alert_placeholder" style="margin-top: 2%; background-color:#000000; color: #0cf52b" class="alert" role="alert">';
+var alert_div = '<div id="alert_placeholder" style="margin-top: 2%; background-color:#141313; color: #da1212" class="alert" role="alert">';
 var kubelinter = '';
 var showPodName = true
 var latestPodNameY = '';
 var namespacesJumpFlag = false;
 var namespacesJumpStaus = 'Disabled';
+
+var ws_socket = new WebSocket("wss://kubeinvaders.io/websocket", "protocolOne");
+
+// Connection opened
+ws_socket.addEventListener('open', function (event) {
+    // ws_socket.send('{ "action": "STARTUMARELL", "namespace": "nothingfornow" }');
+});
+
+// window.setInterval(function webSocketLoop() {
+//     if ($('#umarellEventsSwitch').is(':checked')) {
+//         ws_socket.send('{ "action": "GETEVENTS", "namespace": "' + namespace + '" }');
+//     }
+    
+//     if ($('#umarellPodlogsSwitch').is(':checked')) {
+//         ws_socket.send('{ "action": "GETPODLODS", "namespace": "' + namespace + '" }');
+//     }
+// }, 1000)
+
+// Listen for messages
+ws_socket.addEventListener('message', function (event) {
+    // console.log('[WEBSOCKET] Message from server ', event.data);
+    // console.log('umarell_items length is ' + umarell_items.length );
+    // if (umarell_items.length > 5) {
+    //     console.log("Delete elements from umarell_items...");
+    //     umarell_items.shift();
+    // }
+    // umarell_items.push("<p>" + event.data + "</p>")
+    // // $('#events').html = umarell_items.join('<br>');
+});
+
+function umarellSwitchEvents(){
+    // console.log("Enable Kube Events");
+    // ws_socket.send('{ "action": "GETEVENTS", "namespace": "' + namespace + '" }');
+
+}
+
+function umarellSwitchPodLogs(){
+    // console.log("Enable Kube Podlogs");
+    // ws_socket.send('{ "action": "GETPODLODS", "namespace": "' + namespace + '" }');
+}
 
 function IsJsonString(str) {
     try {
@@ -131,6 +175,20 @@ function getMetrics() {
     oReq.send();
 }
 
+function runTrivy() {
+    $('#trivyModal').modal('show');
+    modal_opened = true;
+    var oReq = new XMLHttpRequest();
+    oReq.onload = function () {
+        trivy = this.responseText;
+        console.log(trivy);
+        result_parsed = JSON.stringify(JSON.parse(trivy), null, 4);
+        $('#trivyResult').text(result_parsed);
+    };;
+    oReq.open("GET", "https://ENDPOINT_PLACEHOLDER/kube/secpod_wrap?namespace=" + namespace);
+    oReq.send();    
+}
+
 function runKubeLinter() {
     $('#kubeLinterModal').modal('show');
     modal_opened = true;
@@ -144,6 +202,7 @@ function runKubeLinter() {
     oReq.open("GET", "https://ENDPOINT_PLACEHOLDER/kube/kube-linter?namespace=" + namespace);
     oReq.send();
 }
+
 function getNamespaces() {
     var oReq = new XMLHttpRequest();
     oReq.onload = function () {
@@ -164,16 +223,39 @@ function getEndpoint() {
     oReq.send();
 }
 
+function getRegexFilter() {
+    var oReq = new XMLHttpRequest();
+    oReq.onload = function () {
+        console.log(this.responseText);
+        job_parsed = JSON.stringify(JSON.parse(this.responseText), null, 4);
+        $('#currentRegexFilter').text(job_parsed);
+    };;
+    oReq.open("GET", "https://ENDPOINT_PLACEHOLDER/kube/chaos/params?action=get_regex_filter");
+    oReq.send();
+}
+
 function getCurrentChaosContainer() {
     var oReq = new XMLHttpRequest();
     oReq.onload = function () {
-        //console.log(this.responseText);
+        cconsole.log(this.responseText);
         job_parsed = JSON.stringify(JSON.parse(this.responseText), null, 4);
         $('#currentChaosContainrYaml').text(job_parsed);
         $('#currentChaosContainerJsonTextArea').val(job_parsed);
     };;
     oReq.open("GET", "https://ENDPOINT_PLACEHOLDER/kube/chaos/containers?action=container_definition");
     oReq.send();
+}
+
+function setRegexFilter() {
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "https://ENDPOINT_PLACEHOLDER/kube/chaos/params?action=set", true);
+    oReq.onreadystatechange = function () {
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            $('#alert_placeholder2').text('New Regex Filter has been configured');
+        }
+    };;
+    oReq.setRequestHeader("Content-Type", "application/json");
+    oReq.send($('#currentRegexFilterTextArea').val());
 }
 
 function setChaosContainer() {

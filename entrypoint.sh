@@ -10,6 +10,9 @@ fi
 # TODO: use a sidecar
 redis-server /etc/redis/redis.conf &
 
+# TODO: use a sidecar
+python3 /opt/websocket/server.py &
+
 sed -i "s/ENDPOINT_PLACEHOLDER/$ENDPOINT/g" /var/www/html/kubeinvaders.js
 
 nginx -c /etc/nginx/nginx.conf -g 'daemon off;'

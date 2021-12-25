@@ -15,4 +15,8 @@ do
   --header "Authorization: Bearer ${TOKEN}" > /tmp/kube-linter-pods/${i}.yaml
 done
 
-kube-linter lint /tmp/kube-linter-pods/* --format json
+> command.txt
+kubelinter_output=$(kube-linter lint /tmp/kube-linter-pods/* --format json)
+command="PUBLISH kubeinvaders_stream '${kubelinter_output}'"
+echo $command > command.txt
+cat command.txt | redis-cli

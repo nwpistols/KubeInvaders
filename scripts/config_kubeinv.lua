@@ -1,4 +1,5 @@
 local config = {}
+config['default_regex_filter'] = ".*"
 config['default_chaos_container'] = [[
 {
     "name": "kubeinvaders-chaos-node",

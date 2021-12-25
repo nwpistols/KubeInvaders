@@ -24,7 +24,7 @@ clusterRole:
 replicaCount: 1
 
 image:
-  repository: luckysideburn/kubeinvaders
+  repository: 192.168.178.36:5001/luckysideburn/kubeinvaders
   tag: v1.9
   pullPolicy: Always
 

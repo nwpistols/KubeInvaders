@@ -72,7 +72,7 @@ Vagrant.configure('2') do |config|
     k3s.vm.network 'private_network', ip: '192.168.58.99'
     k3s.vm.network 'forwarded_port', guest: 80, host: 8080, host_ip: '127.0.0.1'
     k3s.vm.provider :virtualbox do |vb|
-      vb.memory = 8192
+      vb.memory = 12288
       vb.cpus = 2
     end
    #k3s.vm.provision "shell",
