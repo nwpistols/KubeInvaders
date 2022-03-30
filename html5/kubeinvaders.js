@@ -237,7 +237,7 @@ function getRegexFilter() {
 function getCurrentChaosContainer() {
     var oReq = new XMLHttpRequest();
     oReq.onload = function () {
-        cconsole.log(this.responseText);
+        console.log("getCurrentChaosContainer: " +  this.responseText);
         job_parsed = JSON.stringify(JSON.parse(this.responseText), null, 4);
         $('#currentChaosContainrYaml').text(job_parsed);
         $('#currentChaosContainerJsonTextArea').val(job_parsed);

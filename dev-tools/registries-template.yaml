@@ -1,0 +1,4 @@
+mirrors:
+  "ENDPOINT":
+    endpoint:
+      - "http://ENDPOINT"

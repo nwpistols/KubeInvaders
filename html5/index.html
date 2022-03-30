@@ -3,71 +3,84 @@
   <head>
     <meta charset="utf-8" />
     <title>KubeInvaders</title>
+    <!-- Bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./bootstrap-5.0.0-dist/css/bootstrap.min.css">
     <style>
-      canvas { background: #141313; display: block; margin: 0 auto; border:1px solid #c2c0c1;}
-      body { background-color: #000000;}
+      canvas { background: #000; display: block; margin: 0 auto; border:1px solid #ffffff;}
+      .dropdown-toggle::after {
+          display: none;
+        }
+      .text-decoration-none{
+        text-decoration: none!important;
+      }
+      /* Font Awesome Icons have variable width. Added fixed width to fix that.*/
+      .icon-width { width: 2rem;}
+      .main-container{margin-top: 85px;}
+      .switch-btn{box-shadow: 0px 3px 2px #000;}
+      .main-card .card{margin: 0 15px;margin: 0 auto;}
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#" style="margin-top: 0.2%;">KubeInvaders</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#"><span class="ml-3 font-weight-bold">KubeInvaders</span></a> 
+        <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar4">
+          <span class="navbar-toggler-icon"></span> 
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown" style="margin-top: 0.2%;">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <font style="color: #ffffff;">Menu</font>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                <li><a class="dropdown-item" href="#" onclick="runKubeLinter()">Run KubeLinter (Current Namespace)</a></li>
-                <li><a class="dropdown-item" href="#" onclick="runTrivy()">Run Trivy (Current Namespace)</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showSpecialKeys()">Show Special Keys</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showCurrentChaosContainer()">Show Current Chaos Container for nodes</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showSetCurrentChaosContainer()">Set Custom Chaos Container for nodes</a></li>
+          <div class="collapse navbar-collapse" id="navbar4">
+            <ul class="navbar-nav mr-auto pl-lg-4">
+              <li class="nav-item dropdown">
+               <a class="nav-link  dropdown-toggle" href="#" data-bs-toggle="dropdown">Menu</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" onclick="runKubeLinter()">Run KubeLinter On Current Namespace</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="showSpecialKeys()">Show Special Keys</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="showCurrentChaosContainer()">Show Current Chaos Container for nodes</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="showSetCurrentChaosContainer()">Set Custom Chaos Container for nodes</a></li>
+                </ul>
             </li>
-          </ul>
-          <li class="nav-item chaosengineering" style="margin-top: 1%;">
-            <span class=".navbar-text" style="color: #bbbbbb;">Deleted Pod Total:&nbsp;&nbsp;<span id="deleted_pods_total" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
-            <span class=".navbar-text" style="color: #bbbbbb">Chaos Jobs Total:&nbsp;&nbsp;<span id="chaos_jobs_total" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
-            <span class=".navbar-text" style="color: #bbbbbb">Not Running Pods:&nbsp;&nbsp;<span id="pods_not_running_on" style="color: #f1f500">0</span>&nbsp;|&nbsp;</span>
-            <span class=".navbar-text" style="color: #bbbbbb">Current Replicas State Delay:&nbsp;&nbsp;</span><span id="fewer_replicas_seconds" style="color: #f1f500">0</span><font color="#4f4f4f">&nbsp;sec</font>&nbsp;|&nbsp;</span>
-            <span class=".navbar-text" style="color: #bbbbbb">Latest Replicas State Delay:&nbsp;&nbsp;<span id="latest_fewer_replicas_seconds" style="color: #f1f500">0</span><font color="#4f4f4f">&nbsp;sec</font>&nbsp;</span>
-          </li>
-        </div>
+            </ul>
+
+          </div>
       </div>
     </nav>
-    
-    <!-- Modal -->
-    <div class="modal" id="regexFilterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <label for="currentRegexFilter" style="margin-bottom: 1%;" onte>Current Regex Filter for Umarell Console</label>
-            <pre id="currentRegexFilter">.*</pre> 
-            <form>
-              <div class="form-group">
-                <label for="exampleFormControlTextarea1" style="margin-bottom: 1%;" onte>Define new Regex Filter</label>
-                <textarea class="form-control" id="currentRegexFilterTextArea" rows="10"></textarea>
-              </div>
-              <div class="form-group">
-                <p id="alert_placeholder2" style="color: black; font-family: 'Courier New', Courier, monospace; margin-top: 3%;"></p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="setRegexFilter()">Save</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeRegexFilterModal()">Close</button>
-              </div>
-            </form>
+    <div class="container main-container">
+      <div class="row main-card">
+          <div class="card text-white bg-primary col-md-2" style="max-width: 20rem;">
+            <div class="card-header">Deleted Pod Total</div>
+            <div class="card-body">
+              <h5 class="card-title"><span id="deleted_pods_total" style="color: #f1f500">0</span></span></h5>
+            </div>
           </div>
-        </div>
+          <div class="card text-white bg-secondary col-md-2" style="max-width: 20rem;">
+            <div class="card-header">Chaos Jobs Total</div>
+            <div class="card-body">
+              <h5 class="card-title"><span id="chaos_jobs_total" style="color: #f1f500">0</span></span></h5>
+            </div>
+          </div>
+          <div class="card text-white bg-success col-md-2" style="max-width: 20rem;">
+            <div class="card-header">Not Running Pods</div>
+            <div class="card-body">
+              <h5 class="card-title"><span id="pods_not_running_on" style="color: #f1f500">0</span></span></h5>
+            </div>
+          </div>
+          <div class="card text-white bg-danger col-md-2" style="max-width: 20rem;">
+            <div class="card-header">Current Replicas State Delay</div>
+            <div class="card-body">
+              <h5 class="card-title"><span id="fewer_replicas_seconds" style="color: #f1f500">0</span><font color="#4f4f4f">&nbsp;sec</font></span></h5>
+            </div>
+          </div>
+          <div class="card text-white bg-warning col-md-2" style="max-width: 20rem;">
+            <div class="card-header">Latest Replicas State Delay</div>
+            <div class="card-body">
+              <h5 class="card-title"><span id="latest_fewer_replicas_seconds" style="color: #f1f500">0</span><font color="#4f4f4f">&nbsp;sec</font>&nbsp;</span></h5>
+            </div>
+          </div>
       </div>
-    </div>
-
-    <div class="modal fade" id="currentChaosContainerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="row">
+        
+        <div class="col-md-12">
+          <div class="modal fade" id="currentChaosContainerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -75,19 +88,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeCurrentChaosJobModal()">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="trivyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-          <div class="modal-body">
-            <pre id="trivyResult">Trivy Analysis has been started. Check Umarell Console.</pre> 
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeTrivyModal()">Close</button>
           </div>
         </div>
       </div>
@@ -151,93 +151,64 @@
       </div>
     </div>
 
-    <div class="container chaosengineering" id="gameContainer" style="width: 50%; height: 50%;">
+    <div class="container" id="gameContainer" style="width: 100%; height: 50%;">
       <div class="starter-template">
-        <div class="container chaosengineering" style="margin-bottom: 2%;">
+        <div class="container" style="margin-bottom: 2%;">
           <div class="row" style="margin-top: 2%;">
             <div class="row">
               <div class="col text-center">
-                <button type="button" id="controlAutoPilotButton" class="btn btn-dark" onclick="controlAutoPilot()">Start</button>
+                <button type="button" id="controlAutoPilotButton" class="btn btn-success" style="width: 100%;" onclick="controlAutoPilot()">Start</button>
               </div>
               <div class="col text-center">
                 <input type="range" id="randomFactorInput" name="randomFactorInput" min="0" max="100" value="50" onclick="changeRandomFactor()">
               </div>
-              <div class="col text-center text-white">
-                <label for="randomFactorInput">Random Factor:&nbsp;<span id="currentRandomFactor">50</span></label>
+              <div class="col text-center">
+                <span class="label label-info">Ramdom Factor:&nbsp;<span id="currentRandomFactor">50</span></span>
               </div>
             </div>
             <div class="row" style="margin-top: 1%;">
               <div class="col text-center">
-                <button type="button" id="buttonShuffle" class="btn btn-dark btn-sm" onclick="buttonShuffleHelper()">Disable Shuffle</button>
+                <button type="button" id="buttonShuffle" class="btn btn-default switch-btn" onclick="buttonShuffleHelper()">Disable Shuffle</button>
               </div>
               <div class="col text-center">
-                <button type="button" id="namespacesJumpButton" class="btn btn-dark btn-sm" onclick="namespacesJumpControl()">Enable Auto NS Switch</button>
+                <button type="button" id="namespacesJumpButton" class="btn btn-default switch-btn" onclick="namespacesJumpControl()">Enable Auto NS Switch</button>
               </div>
               <div class="col text-center">
-                <button type="button" id="buttonOnlyPodName" class="btn btn-dark btn-sm" onclick="showPodNameControl()">Hide Pods Name</button>
+                <button type="button" id="buttonOnlyPodName" class="btn btn-default switch-btn" onclick="showPodNameControl()">Hide Pods Name</button>
               </div>
             </div>
           </div>
         </div>
-        
         <div class="row">
-          <canvas class="chaosengineering" id="myCanvas" width="720" height="480"></canvas>
+          <canvas id="myCanvas" width="720" height="480"></canvas>
         </div>
-
-        <div class="row chaosengineering">
+        <div class="row">
           <div class="col text-center">
+
           </div>
           <div class="col text-center">
             <input type="button" style="margin-top: 2%" class="btn btn-dark" id="zoomInGameScreenInput" name="zoomInGameScreenInput" value="+" onclick="zoomIn()">
             <input type="button" style="margin-top: 2%" class="btn btn-dark" id="zoomOutGameScreenInput" name="zoomOutGameScreenInput" value="-" onclick="zoomOut()">
           </div>
           <div class="col text-center">
-          </div>
-        </div>
 
-
-        <div class="row" style="margin-top: 2%;">
-          <div class="col">
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="umarellEventsSwitch" onclick="umarellSwitchEvents()">
-              <label class="form-check-label" for="umarellEventsSwitch" style="color: #dfdddd;">Events</label>
-             </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="umarellPodlogsSwitch" onclick="umarellSwitchPodLogs()">
-              <label class="form-check-label" for="umarellPodlogsSwitch" style="color: #dfdddd;">Pod Logs</label>
-            </div>
-          </div>
-          <div class="col">
-            <button type="submit" class="btn btn-dark btn-lg" onclick="openRegexFilterModal()">Regex Filter</button>
-          </div>
-          <div class="col">
-          </div>
-          <div class="col">
-          </div>  
-        </div>
-        <div class="row alerts">
-          <div id="alert_placeholder" style="margin-top: 1%;"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container chaosengineering" id="eventcontainer" style="width: 100%; height: 100%;">
-      <div class="row logging" id="eventcard">
-        <div class="card events border border-danger" style="width: 100%; background-color: #141313; overflow-y: scroll; overscroll-behavior-y: revert; height: 500px;">
-          <div class="card-body">
-            <h5 class="card-title"><font color="#808080">Umarell Console</font></h5>
-              <code class="card-text" id="events" style="color: #ee4035;">...</code>
           </div>
         </div>
       </div>
+      <div id="alert_placeholder" style="margin-top: 3%;"></div>
     </div>
-
     <div id="footer" style="margin-top: 5%;">
       <div class="container text-center">
         <p class="text-muted credit" style="color:#fff">kubeinvaders_version: develop</p>
       </div>
     </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
     
+    
+
     <script src="kubeinvaders.js"></script>
     <script src="./bootstrap-5.0.0-dist/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -248,8 +219,6 @@
       function changeRandomFactor() {
         randomFactor = $("#randomFactorInput").val();
         $("#currentRandomFactor").text(randomFactor);
-        $("#currentRandomFactor").style.color = "green";
-
       }
 
       function zoomIn() {
@@ -311,23 +280,18 @@
         modal_opened = false;
       }
 
-      function closeTrivyModal() {
-        $('#trivyModal').modal('hide');
-        modal_opened = false;
-      }
-
-      function openRegexFilterModal() {
-        $('#regexFilterModal').modal('show');
-        modal_opened = true;
-      }
-
-      function closeRegexFilterModal() {
-        $('#regexFilterModal').modal('hide');
-        modal_opened = false;
-      }
-
       $('textarea').on('input', function() {
         $('#alert_placeholder2').text('');
+      });
+
+      $(document).ready(function () {
+      if ($(window).width() > 991){
+      $('.navbar-light .d-menu').hover(function () {
+              $(this).find('.sm-menu').first().stop(true, true).slideDown(150);
+          }, function () {
+              $(this).find('.sm-menu').first().stop(true, true).delay(120).slideUp(100);
+          });
+          }
       });
 
     </script>
